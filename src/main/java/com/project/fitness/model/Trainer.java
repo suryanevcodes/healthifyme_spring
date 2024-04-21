@@ -3,6 +3,9 @@ package com.project.fitness.model;
 import java.util.List;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -29,6 +32,8 @@ public class Trainer implements users{
     private String password;
     private double Experience;
 
+    //@JsonManagedReference
+    @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "trainer")
     Set<User> users;
 

@@ -19,7 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.project.fitness.dto.UserRequest;
 import com.project.fitness.model.Exercises;
 import com.project.fitness.model.Meal;
+import com.project.fitness.model.Nutritionist;
+import com.project.fitness.model.Trainer;
 import com.project.fitness.model.User;
+import com.project.fitness.repo.NutritionistRepo;
+import com.project.fitness.repo.TrainerRepo;
+import com.project.fitness.repo.UserRepository;
 import com.project.fitness.service.MealService;
 import com.project.fitness.service.UserService;
 
@@ -31,6 +36,42 @@ public class UserController {
     private  UserService userService;
     @Autowired
     private MealService mealService;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private TrainerRepo trainerRepo;
+    @Autowired
+    private NutritionistRepo nutritionistRepo;
+
+
+
+    @PutMapping("/changeuser/{trainerId}/{userid}")
+    public ResponseEntity<User> changetrainerforuser(@PathVariable int trainerId, @PathVariable int userid){
+        Optional<Trainer> trainer = trainerRepo.findById(trainerId);
+        Optional<User> user = userRepository.findById(userid);
+        if(trainer.isPresent() && user.isPresent()){
+            var newuser = userService.changeTrainer(trainerId, userid);
+            return new ResponseEntity<>(newuser,HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+    @PutMapping("/changenutri/{nutriId}/{userid}")
+    public ResponseEntity<User> changenutritionistforuser(@PathVariable int nutriId, @PathVariable int userid){
+       Optional<Nutritionist> newnutri= nutritionistRepo.findById(nutriId);
+        Optional<User> user = userRepository.findById(userid);
+        if(newnutri.isPresent() && user.isPresent()){
+            var newuser = userService.changeNutritionist(nutriId, userid);
+            return new ResponseEntity<>(newuser,HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
 
     @PutMapping("/deleteexercisebyuserid/{uid}/{exeid}")
     public ResponseEntity<String> deleteexercisebyuserid(@PathVariable int uid, @PathVariable int exeid){

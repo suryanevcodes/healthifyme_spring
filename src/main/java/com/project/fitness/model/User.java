@@ -2,6 +2,7 @@ package com.project.fitness.model;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -59,9 +60,12 @@ public class User implements users {
     @JoinColumn(name = "gym_owner_id")
     private Gymowner gymowner;
 
+    //@JsonBackReference
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Trainer trainer;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Nutritionist nutritionist;
 
