@@ -3,6 +3,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,7 +36,6 @@ public class MealController {
         return meal.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    
 
     @PostMapping(value = "/create")
     public ResponseEntity<Meal> createEndUser(@RequestBody Meal meal) {
@@ -53,9 +53,13 @@ public class MealController {
    }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteEndUser(@PathVariable int id) {
-        mealService.deleteById(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<String> deleteEndUser(@PathVariable int id) {
+        try{
+            mealService.deleteById(id);
+            return new ResponseEntity<>("deleted",HttpStatus.OK);
+        }catch(Exception e){
+            return new ResponseEntity<>("not deleted",HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @DeleteMapping("/deleteAll")

@@ -14,6 +14,8 @@ import com.project.fitness.model.User;
 import com.project.fitness.repo.ExerciseRepository;
 import com.project.fitness.repo.GymRepo;
 import com.project.fitness.repo.MealRepository;
+import com.project.fitness.repo.NutritionistRepo;
+import com.project.fitness.repo.TrainerRepo;
 import com.project.fitness.repo.UserRepository;
 
 @Service
@@ -24,6 +26,12 @@ public class UserService {
 
     @Autowired
     private MealRepository mealRepository;
+
+    @Autowired
+    private TrainerRepo trainerRepo;
+
+    @Autowired
+    private NutritionistRepo nutritionistRepo;
 
     @Autowired
     private ExerciseRepository exerciseRepository;
@@ -37,8 +45,11 @@ public class UserService {
     public Optional<User> findById(int id) {
         return userRepository.findById(id);
     }
+    
     public User addUser(UserRequest endUser){
         var gymowner = gymRepo.findById(endUser.getGymownerid()).get();
+        var trainer = trainerRepo.findById(endUser.getTrainerId()).get();
+        var nutritionist = nutritionistRepo.findById(endUser.getNutritionistId()).get();
         var user = User.builder()
                     .LastName(endUser.getLastName())
                     .age(endUser.getAge())
@@ -47,8 +58,9 @@ public class UserService {
                     .weight(endUser.getWeight())
                     .password(endUser.getPassword())
                     .gymowner(gymowner)
+                    .trainer(trainer)
+                    .nutritionist(nutritionist)
                     .build();
-                    
         return userRepository.save(user);
     }
 
@@ -141,6 +153,7 @@ public class UserService {
             return Collections.emptySet(); // Return empty set if user not found
         }
     }
+
     public Set<Exercises> findexercisesbyid(int id) {
         User user = userRepository.findById(id).orElse(null);
         if (user != null) {
@@ -161,6 +174,18 @@ public class UserService {
         var meal = mealRepository.findById(Mealid).orElse(null);
         if(user != null && meal != null){
             user.getMeals().remove(meal);
+            userRepository.save(user);
+            return user;
+        }
+        return user;
+    }
+
+    public User deleteexercisebyid(int userId , int mealid){
+        var user = userRepository.findById(userId).orElse(null);
+        var exercise = exerciseRepository.findById(mealid).orElse(null);
+
+        if(user != null && exercise!= null){
+            user.getExercises().remove(exercise);
             userRepository.save(user);
             return user;
         }

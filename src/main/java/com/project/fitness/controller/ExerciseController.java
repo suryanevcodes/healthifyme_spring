@@ -1,6 +1,7 @@
 package com.project.fitness.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.fitness.model.Exercises;
+import com.project.fitness.repo.ExerciseRepository;
 import com.project.fitness.service.ExerciseService;
 
 
@@ -23,6 +25,8 @@ import com.project.fitness.service.ExerciseService;
 public class ExerciseController {
     @Autowired
     private  ExerciseService exerciseService;
+    @Autowired
+    private ExerciseRepository exerciseRepository;
 
     @PostMapping(value = "/create")
     public ResponseEntity<Exercises> create(@RequestBody Exercises exercise){
@@ -54,9 +58,17 @@ public class ExerciseController {
    }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteEndUser(@PathVariable int id) {
+    public ResponseEntity<String> deletemeals (@PathVariable int id) {
+        try{
         exerciseService.deleteById(id);
-        return ResponseEntity.noContent().build();
+        Optional<Exercises> exc = exerciseRepository.findById(id);
+        if(!exc.isPresent()){
+            return new ResponseEntity<>("Exercise not found ",HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>("Deleted",HttpStatus.OK);
+        }catch(Exception e){
+            return new ResponseEntity<>("not deleted",HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @DeleteMapping("/deleteAll")

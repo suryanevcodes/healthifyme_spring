@@ -20,6 +20,7 @@ import com.project.fitness.dto.UserRequest;
 import com.project.fitness.model.Exercises;
 import com.project.fitness.model.Meal;
 import com.project.fitness.model.User;
+import com.project.fitness.service.MealService;
 import com.project.fitness.service.UserService;
 
 @RestController
@@ -28,14 +29,31 @@ public class UserController {
 
     @Autowired
     private  UserService userService;
+    @Autowired
+    private MealService mealService;
 
-    @PutMapping("/deletemealidbyuserid/{id}/{id}")
-    public ResponseEntity<User> deletemealbyuserid(@PathVariable int userid , @PathVariable int mealid){
+    @PutMapping("/deleteexercisebyuserid/{uid}/{exeid}")
+    public ResponseEntity<String> deleteexercisebyuserid(@PathVariable int uid, @PathVariable int exeid){
+        try{
+            var user = userService.deleteexercisebyid(uid,exeid);
+            return new ResponseEntity<>("Deleted the Exercise",HttpStatus.OK);
+        }catch(Exception e){
+            return new ResponseEntity<>("Not deleted that exercises",HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+
+    @PutMapping("/deletemealidbyuserid/{userid}/{mealid}")
+    public ResponseEntity<String> deletemealbyuserid(@PathVariable int userid , @PathVariable int mealid){
         try{
           var user = userService.deletemealbyId(userid, mealid);
-           return new ResponseEntity<>(user,HttpStatus.OK); 
+          Optional<Meal> meal = mealService.findById(mealid);
+          if(!(meal.isPresent())){
+                return new ResponseEntity<>("meal not found",HttpStatus.NOT_FOUND);
+          }
+           return new ResponseEntity<>("Deleted the meal ",HttpStatus.OK); 
         }catch(Exception e){
-            return new ResponseEntity<>(null,HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("not deleted ",HttpStatus.INTERNAL_SERVER_ERROR);
         } 
     }
 
@@ -45,7 +63,7 @@ public class UserController {
     try {
         User user = userService.mealidmapuserid(userId, mealId);
         if (user != null) {
-            return new ResponseEntity<>("User received", HttpStatus.CREATED);
+            return new ResponseEntity<>("Meals added to the user", HttpStatus.CREATED);
         } else {
             return new ResponseEntity<>("User or meal not found", HttpStatus.NOT_FOUND);
         }

@@ -2,7 +2,8 @@ package com.project.fitness.model;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -34,22 +35,20 @@ public class User implements users {
     private String email;
     private String password;
 
-    //@JsonManagedReference
+    @JsonManagedReference
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(name = "user_meal" ,
                 joinColumns = @JoinColumn (name = "user_id"),
                 inverseJoinColumns = @JoinColumn(name ="meal_id") )
     private Set<Meal> meals;
 
-    @JsonIgnoreProperties
+    @JsonManagedReference
     @ManyToMany(cascade =CascadeType.ALL)
     @JoinTable(name = "user_exercises" ,
                 joinColumns = @JoinColumn(name ="user_id") ,
                 inverseJoinColumns = @JoinColumn(name = "exercise_id")) 
     private Set<Exercises> exercises;
     
-
-
     // @OneToMany(cascade = CascadeType.ALL,
     //             fetch = FetchType.LAZY,
     //             mappedBy = "user" )
@@ -59,5 +58,12 @@ public class User implements users {
     @ManyToOne(fetch = FetchType.LAZY ,cascade = CascadeType.ALL)
     @JoinColumn(name = "gym_owner_id")
     private Gymowner gymowner;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Trainer trainer;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Nutritionist nutritionist;
+
 
 }

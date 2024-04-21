@@ -46,7 +46,7 @@ public class GymController {
         return EndUser.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/create")
+    @PostMapping("/create" )
     public ResponseEntity<Gymowner> createEndUser(@RequestBody Gymowner gymuser) {
         Gymowner gymowner = gymService.create(gymuser);
         return new ResponseEntity<>(gymowner,HttpStatus.CREATED);
