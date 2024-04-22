@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import com.project.fitness.dto.UserRequest;
 import com.project.fitness.model.Exercises;
 import com.project.fitness.model.Meal;
+import com.project.fitness.model.Nutritionist;
+import com.project.fitness.model.Trainer;
 import com.project.fitness.model.User;
 import com.project.fitness.repo.ExerciseRepository;
 import com.project.fitness.repo.GymRepo;
@@ -46,6 +48,8 @@ public class UserService {
         return userRepository.findById(id);
     }
     
+    // here we are adding the user with the trainer id , nutritioner id , gymowner id
+
     public User addUser(UserRequest endUser){
         var gymowner = gymRepo.findById(endUser.getGymownerid()).get();
         var trainer = trainerRepo.findById(endUser.getTrainerId()).get();
@@ -64,6 +68,31 @@ public class UserService {
         return userRepository.save(user);
     }
 
+// THIS CODE IS FOR CHANGING THE TRAINER FOR THE USER BY PASSING THE USER ID AND TRAINER ID
+// HERE FOR THIS USERID WE NEED TO UPDATE THE TRAINERID THAT IS trainerid.
+
+    public User changeTrainer(int Trainerid , int userid){
+
+       Optional<Trainer> trainer = trainerRepo.findById(Trainerid);
+       Optional<User> user = userRepository.findById(userid);   
+         var  nutri = user.get().getNutritionist();
+         user.get().setTrainer(trainer.get());
+         user.get().setNutritionist(nutri);
+         return userRepository.save(user.get());
+    }
+    // THIS CODE IS FOR CHANGING THE nutritioner FOR THE USER BY PASSING THE USER ID AND nutritioner ID
+// HERE FOR THIS USERID WE NEED TO UPDATE THE nutritionerid THAT IS nutritionistid.
+
+
+    public User changeNutritionist(int nutritionistid , int userid){
+
+        Optional<Nutritionist> nutri = nutritionistRepo.findById(nutritionistid);
+        Optional<User> user = userRepository.findById(userid);   
+          //var  nutris = user.get().getNutritionist();
+          user.get().setNutritionist(nutri.get());
+          return userRepository.save(user.get());
+     }
+
    
 
     public User save(User user) {
@@ -78,15 +107,8 @@ public class UserService {
         userRepository.deleteAll();
     }
 
-    // public User mealidmapuserid(int userId, int mealId){
-    //     User user = userRepository.findById(userId).get();
-    //     Meal meal = mealRepository.findById(mealId).get();
-    //     Set<Meal> meals = user.getMeals();
-    //     meals.add(meal);
-    //     user.setMeals(meals);
-    //     return userRepository.save(user);
-          
-    // }
+  
+    // here in this code we are adding exercise for the particular userid
 
     public User exerciseidmapuserid (int userId, int exerciseId) {
         // Retrieve user and meal objects from repositories
@@ -111,6 +133,8 @@ public class UserService {
         return user; // Or handle the case when either user or meal is not found
     }
 
+    // Here we are going to add meals to the user with respective meal and userids
+
     public User mealidmapuserid(int userId, int mealId) {
         // Retrieve user and meal objects from repositories
         User user = userRepository.findById(userId).orElse(null);
@@ -134,10 +158,8 @@ public class UserService {
         return user; // Or handle the case when either user or meal is not found
     }
 
-    // public Set<Meal> findmealsbyid(int id){
-    //     User user = userRepository.findById(id).orElse(null);
-    //     return user.getMeals();
-    // }
+
+    // Here in this we are going to find all the meals for the respective user by userid
 
     public Set<Meal> findmealsbyid(int id) {
         User user = userRepository.findById(id).orElse(null);
@@ -154,6 +176,8 @@ public class UserService {
         }
     }
 
+    // here we are going to find all the exercises for the user with the help of userid
+
     public Set<Exercises> findexercisesbyid(int id) {
         User user = userRepository.findById(id).orElse(null);
         if (user != null) {
@@ -169,6 +193,8 @@ public class UserService {
         }
     }
 
+    // here we can delete the meals associated with the respective user and meal id
+
     public User deletemealbyId(int userId, int Mealid){
         var user = userRepository.findById(userId).orElse(null);
         var meal = mealRepository.findById(Mealid).orElse(null);
@@ -179,6 +205,8 @@ public class UserService {
         }
         return user;
     }
+
+    // here we can delte the exercises associated with the respecitve  exercise id and meal id
 
     public User deleteexercisebyid(int userId , int mealid){
         var user = userRepository.findById(userId).orElse(null);
